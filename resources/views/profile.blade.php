@@ -51,8 +51,12 @@
     <!-- Left Column: Profile Card -->
     <div class="col-lg-4">
         <div class="profile-card">
-            <div class="profile-avatar-large">
-                {{ substr(Auth::user()->name ?? 'A', 0, 1) }}
+            <div class="profile-avatar-large" style="overflow: hidden;">
+                @if(Auth::user()->profile_image)
+                    <img src="{{ asset('storage/' . Auth::user()->profile_image) }}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                @else
+                    {{ substr(Auth::user()->name ?? 'A', 0, 1) }}
+                @endif
             </div>
             <h4 class="fw-bold text-body mb-1">{{ Auth::user()->name }}</h4>
             <p class="text-muted mb-4">Manager</p>
@@ -85,7 +89,7 @@
     <div class="col-lg-8">
         <div class="card border-0">
             <div class="card-body p-4">
-                <form action="{{ route('profile.update') }}" method="POST">
+                <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
 
@@ -95,6 +99,14 @@
                     </div>
                     
                     <div class="row g-3 mb-4">
+                        <div class="col-md-12">
+                            <label class="form-label fw-semibold text-body">Profile Picture</label>
+                            <input type="file" name="profile_image" class="form-control @error('profile_image') is-invalid @enderror" accept="image/*">
+                            @error('profile_image')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <small class="text-muted mt-1 d-block" style="font-size: 0.8rem;">Allowed formats: jpeg, png, jpg, gif. Max size: 2MB.</small>
+                        </div>
                         <div class="col-md-6">
                             <label class="form-label fw-semibold text-body">Full Name</label>
                             <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name', Auth::user()->name) }}" required placeholder="Enter full name">

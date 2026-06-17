@@ -73,6 +73,7 @@ class AuthController extends Controller
         $rules = [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
+            'profile_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
         ];
 
         if ($request->filled('new_password')) {
@@ -88,6 +89,17 @@ class AuthController extends Controller
         }
 
         $validated = $request->validate($rules);
+
+        if ($request->hasFile('profile_image')) {
+            // Delete old profile image if it exists
+            if ($user->profile_image) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($user->profile_image);
+            }
+
+            // Store new image
+            $path = $request->file('profile_image')->store('profile_images', 'public');
+            $user->profile_image = $path;
+        }
 
         $user->name = $validated['name'];
         $user->email = $validated['email'];

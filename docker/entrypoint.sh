@@ -20,8 +20,10 @@ fi
 RUN_MIGRATIONS=${RUN_MIGRATIONS:-true}
 if [ "$RUN_MIGRATIONS" != "false" ]; then
     php artisan migrate --force
-
 fi
+
+# Link storage directory to public
+php artisan storage:link
 
 php-fpm -D
 

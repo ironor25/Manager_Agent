@@ -15,8 +15,12 @@
 
         <div class="dropdown">
             <div class="user-profile" data-bs-toggle="dropdown" aria-expanded="false">
-                <div class="avatar">
-                    {{ substr(Auth::user()->name ?? 'Admin', 0, 1) }}
+                <div class="avatar" style="overflow: hidden;">
+                    @if(Auth::user()->profile_image)
+                        <img src="{{ asset('storage/' . Auth::user()->profile_image) }}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                    @else
+                        {{ substr(Auth::user()->name ?? 'Admin', 0, 1) }}
+                    @endif
                 </div>
                 <div class="d-none d-md-block text-start">
                     <div class="fw-semibold text-body lh-1" style="font-size: 0.9rem;">{{ Auth::user()->name ?? 'Admin User' }}</div>
