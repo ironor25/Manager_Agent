@@ -119,7 +119,12 @@
                         <div class="row g-3 mt-1">
                             <div class="col-md-12">
                                 <label class="form-label fw-semibold text-body">Team</label>
-                                <input type="text" name="team" class="form-control" required placeholder="e.g. Engineering">
+                                 <select name="team" class="form-select" required>
+                                    <option value="" disabled selected>Select a Team</option>
+                                    @foreach($teams as $team)
+                                        <option value="{{ $team->name }}">{{ $team->name }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
                 </div>
