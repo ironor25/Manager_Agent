@@ -17,8 +17,8 @@ class TaskFactory extends Factory
      */
     public function definition(): array
     {
-        $status = fake()->randomElement(['pending', 'in_progress', 'completed']);
-        $assignedAt = fake()->dateTimeBetween('-1 month', 'now');
+        $status = $this->faker->randomElement(['pending', 'in_progress', 'completed']);
+        $assignedAt = $this->faker->dateTimeBetween('-1 month', 'now');
         
         $startedAt = null;
         $completedAt = null;
@@ -29,13 +29,13 @@ class TaskFactory extends Factory
             $completedAt = (clone $startedAt)->modify('+' . rand(2, 40) . ' hours');
         }
 
-        $estimatedHours = fake()->randomFloat(2, 2, 40);
-        $actualHours = $completedAt ? fake()->randomFloat(2, 2, 50) : null;
+        $estimatedHours = $this->faker->randomFloat(2, 2, 40);
+        $actualHours = $completedAt ? $this->faker->randomFloat(2, 2, 50) : null;
         $delayHours = ($actualHours && $actualHours > $estimatedHours) ? ($actualHours - $estimatedHours) : null;
 
         return [
-            'title' => fake()->sentence(4),
-            'description' => fake()->paragraph(),
+            'title' => $this->faker->sentence(4),
+            'description' => $this->faker->paragraph(),
             'status' => $status,
             'assigned_at' => $assignedAt,
             'started_at' => $startedAt,
@@ -44,7 +44,7 @@ class TaskFactory extends Factory
             'estimated_hours' => $estimatedHours,
             'actual_hours' => $actualHours,
             'delay_hours' => $delayHours,
-            'priority' => fake()->randomElement(['low', 'normal', 'high', 'urgent']),
+            'priority' => $this->faker->randomElement(['low', 'normal', 'high', 'urgent']),
         ];
     }
 }
