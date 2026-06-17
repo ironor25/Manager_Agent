@@ -368,7 +368,7 @@
             dom: '<"d-flex justify-content-between align-items-center mb-3"lf>rt<"d-flex justify-content-between align-items-center mt-3"ip>',
         });
 
-        $('.edit-task-btn').on('click', function() {
+        $('#tasks-table').on('click', '.edit-task-btn', function() {
             var task = $(this).data('task');
             
             $('#editTaskForm').attr('action', '/tasks/' + task.id);
@@ -388,7 +388,7 @@
             }
         });
 
-        $('.trigger-delete').on('click', function() {
+        $('#tasks-table').on('click', '.trigger-delete', function() {
             var actionUrl = $(this).data('action');
             $('#deleteTaskForm').attr('action', actionUrl);
             var deleteModal = new bootstrap.Modal(document.getElementById('deleteTaskModal'));
