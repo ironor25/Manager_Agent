@@ -22,27 +22,27 @@ class TeamAnalyticsService
     /**
      * Calculate Team Efficiency: Average leadership score of all employees in that team.
      */
-    public function calculateTeamEfficiency(string $team): float
+    public function calculateTeamEfficiency(string $team): int
     {
         $employeeIds = Employee::where('team', $team)->pluck('id');
         
         if ($employeeIds->isEmpty()) {
-            return 0.0;
+            return 0;
         }
 
         $avgScore = Performance_report::whereIn('employee_id', $employeeIds)->avg('leadership_score');
-        return round($avgScore ?? 0.0, 2);
+        return (int) round($avgScore ?? 0);
     }
 
     /**
      * Calculate Average Attendance Score for the team.
      */
-    public function calculateAverageAttendance(string $team): float
+    public function calculateAverageAttendance(string $team): int
     {
         $employees = Employee::where('team', $team)->get();
         
         if ($employees->isEmpty()) {
-            return 0.0;
+            return 0;
         }
 
         $totalAttendanceScore = 0;
@@ -51,18 +51,18 @@ class TeamAnalyticsService
             $totalAttendanceScore += $scoreData['attendance_score'] ?? 0;
         }
 
-        return round($totalAttendanceScore / $employees->count(), 2);
+        return (int) round($totalAttendanceScore / $employees->count());
     }
 
     /**
      * Calculate Average Task Completion Score for the team.
      */
-    public function calculateAverageTaskCompletion(string $team): float
+    public function calculateAverageTaskCompletion(string $team): int
     {
         $employees = Employee::where('team', $team)->get();
         
         if ($employees->isEmpty()) {
-            return 0.0;
+            return 0;
         }
 
         $totalCompletionScore = 0;
@@ -71,7 +71,7 @@ class TeamAnalyticsService
             $totalCompletionScore += $scoreData['task_completion_rate'] ?? 0;
         }
 
-        return round($totalCompletionScore / $employees->count(), 2);
+        return (int) round($totalCompletionScore / $employees->count());
     }
 
     /**
@@ -122,10 +122,10 @@ class TeamAnalyticsService
         return $leaderboard;
     }
 
-    public function calculateAverageGitContribution(string $team): float
+    public function calculateAverageGitContribution(string $team): int
     {
         $employees = Employee::where('team', $team)->get();
-        if ($employees->isEmpty()) return 0.0;
+        if ($employees->isEmpty()) return 0;
 
         $totalGitScore = 0;
         foreach ($employees as $employee) {
@@ -133,7 +133,7 @@ class TeamAnalyticsService
             $totalGitScore += $scoreData['git_contribution_score'] ?? 0;
         }
 
-        return round($totalGitScore / $employees->count(), 2);
+        return (int) round($totalGitScore / $employees->count());
     }
 
     public function getTeamMeetingNotes(string $team): array
