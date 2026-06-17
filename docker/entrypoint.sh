@@ -19,8 +19,8 @@ fi
 
 RUN_MIGRATIONS=${RUN_MIGRATIONS:-true}
 if [ "$RUN_MIGRATIONS" != "false" ]; then
-    php artisan migrate:fresh --force
-    php artisan db:seed --force
+    php artisan migrate --force
+
 fi
 
 php-fpm -D
