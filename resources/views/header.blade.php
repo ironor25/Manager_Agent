@@ -13,15 +13,6 @@
             </button>
         </div>
 
-        <div class="position-relative">
-            <button class="btn btn-link text-muted p-2">
-                <i class="fa-regular fa-bell fs-5"></i>
-                <span class="position-absolute top-0 end-0 translate-middle p-1 bg-danger border border-light rounded-circle">
-                    <span class="visually-hidden">New alerts</span>
-                </span>
-            </button>
-        </div>
-
         <div class="dropdown">
             <div class="user-profile" data-bs-toggle="dropdown" aria-expanded="false">
                 <div class="avatar">
