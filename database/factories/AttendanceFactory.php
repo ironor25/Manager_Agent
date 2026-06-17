@@ -17,8 +17,15 @@ class AttendanceFactory extends Factory
      */
     public function definition(): array
     {
+        $loginTime = fake()->dateTimeBetween('-1 month', 'now');
+        $logoutTime = (clone $loginTime)->modify('+' . rand(7, 9) . ' hours');
+        $isLeave = fake()->boolean(10); // 10% chance of leave
+
         return [
-            //
+            'login_time' => $isLeave ? null : $loginTime,
+            'logout_time' => $isLeave ? null : $logoutTime,
+            'late_flag' => $isLeave ? false : fake()->boolean(20), // 20% chance of being late
+            'leave_flag' => $isLeave,
         ];
     }
 }
