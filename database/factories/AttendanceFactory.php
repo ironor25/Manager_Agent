@@ -22,9 +22,9 @@ class AttendanceFactory extends Factory
         $isLeave = $this->faker->boolean(10); // 10% chance of leave
 
         return [
-            'login_time' => $isLeave ? null : $loginTime,
+            'login_time' => $loginTime, // Must not be null according to DB schema
             'logout_time' => $isLeave ? null : $logoutTime,
-            'late_flag' => $isLeave ? false : $this->faker->boolean(20), // 20% chance of being late
+            'late_flag' => $isLeave ? false : $this->faker->boolean(20),
             'leave_flag' => $isLeave,
         ];
     }
