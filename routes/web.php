@@ -62,4 +62,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/developer-tools/api-keys', [ApiKeyController::class, 'store'])->name('api-keys.store');
     Route::delete('/developer-tools/api-keys/{id}', [ApiKeyController::class, 'destroy'])->name('api-keys.destroy');
     Route::post('/developer-tools/api-keys/{id}/toggle', [ApiKeyController::class, 'toggleStatus'])->name('api-keys.toggle');
+
+    // Profile Management
+    Route::get('/profile', [AuthController::class, 'showProfile'])->name('profile.show');
+    Route::put('/profile', [AuthController::class, 'updateProfile'])->name('profile.update');
 });

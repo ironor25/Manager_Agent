@@ -34,14 +34,13 @@
                 <i class="fa-solid fa-chevron-down text-muted ms-2" style="font-size: 0.8rem;"></i>
             </div>
             <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm mt-2">
-                <li><a class="dropdown-item py-2" href="#"><i class="fa-regular fa-user me-2"></i> Profile</a></li>
-                <li><a class="dropdown-item py-2" href="#"><i class="fa-solid fa-gear me-2"></i> Settings</a></li>
+                <li><a class="dropdown-item py-2" href="{{ route('profile.show') }}"><i class="fa-regular fa-user me-2"></i> Profile</a></li>
                 <li><hr class="dropdown-divider"></li>
                 <li>
                     <a class="dropdown-item py-2 text-danger" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                         <i class="fa-solid fa-arrow-right-from-bracket me-2"></i> Logout
                     </a>
-                    <form id="logout-form"  method="POST" class="d-none">
+                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                         @csrf
                     </form>
                 </li>
