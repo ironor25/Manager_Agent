@@ -13,6 +13,8 @@
         border-radius: 50px;
         font-weight: 500;
         font-size: 0.75rem;
+        display: inline-block;
+        white-space: nowrap;
     }
     .status-pending { background: #fef3c7; color: #d97706; }
     .status-in_progress { background: #e0e7ff; color: #4338ca; }
@@ -24,6 +26,8 @@
         font-size: 0.7rem;
         font-weight: 600;
         text-transform: uppercase;
+        display: inline-block;
+        white-space: nowrap;
     }
     .priority-low { background: #f1f5f9; color: #64748b; }
     .priority-normal { background: #e0f2fe; color: #0284c7; }

@@ -65,6 +65,7 @@
         display: inline-flex;
         align-items: center;
         gap: 8px;
+        white-space: nowrap;
     }
 
     .badge-excellent { background: var(--success-gradient); color: #000; }
