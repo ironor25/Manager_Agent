@@ -1,0 +1,111 @@
+services:
+  # MySQL Database
+  - type: pserv
+    name: manager-agent-db
+    runtime: image
+    image:
+      fromRegistry:
+        url: docker.io/mysql:8.0
+    region: ohio
+    plan: starter
+    envVars:
+      - key: MYSQL_DATABASE
+        value: manager_agent
+      - key: MYSQL_USER
+        value: root
+      - key: MYSQL_PASSWORD
+        generateValue: true
+      - key: MYSQL_ROOT_PASSWORD
+        generateValue: true
+    disk:
+      name: mysql-data
+      mountPath: /var/lib/mysql
+      sizeGB: 10
+
+  # Laravel Application
+  - type: web
+    name: manager-agent-app
+    runtime: docker
+    region: ohio
+    plan: starter
+    healthCheckPath: /health
+    scaling:
+      minInstances: 1
+      maxInstances: 3
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: PORT
+        value: "8080"
+      - key: APP_URL
+        fromService:
+          name: manager-agent-app
+          property: host
+        transformTo: https://$APP_URL
+      - key: DB_CONNECTION
+        value: mysql
+      - key: DB_HOST
+        fromService:
+          name: manager-agent-db
+          property: host
+      - key: DB_PORT
+        value: "3306"
+      - key: DB_DATABASE
+        value: manager_agent
+      - key: DB_USERNAME
+        value: root
+      - key: DB_PASSWORD
+        fromService:
+          name: manager-agent-db
+          env: MYSQL_PASSWORD
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: SESSION_DRIVER
+        value: database
+      - key: CACHE_STORE
+        value: database
+      - key: QUEUE_CONNECTION
+        value: database
+      - key: MAIL_MAILER
+        value: log
+      - key: LOG_CHANNEL
+        value: single
+      - key: LOG_LEVEL
+        value: error
+      - key: APP_KEY
+        generateValue: true
+      - key: RUN_SEEDERS
+        value: "false"
+
+    dockerfilePath: ./Dockerfile
+    startCommand: /usr/local/bin/entrypoint.sh
+
+    headers:
+      - http:
+          paths:
+            - path: /
+              service: manager-agent-app
+          domain: your-custom-domain.com # Optional: replace with your custom domain
+
+  # Optional: Redis for caching (uncomment if needed)
+  # - type: pserv
+  #   name: manager-agent-redis
+  #   runtime: image
+  #   image:
+  #     fromRegistry:
+  #       url: docker.io/redis:7-alpine
+  #   plan: starter
+  #   disk:
+  #     name: redis-data
+  #     mountPath: /data
+  #     sizeGB: 1
+
+databases:
+  - name: manager_agent
+    database: manager_agent
+    user: root
+    ipAllowList: []
+
+# Database connection info will be automatically available as environment variables

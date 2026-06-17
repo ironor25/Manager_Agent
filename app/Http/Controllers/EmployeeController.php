@@ -36,7 +36,8 @@ class EmployeeController extends Controller
 
     public function index()
     {
-        return view('employees');
+        $teams = \App\Models\Team::all();
+        return view('employees', compact('teams'));
     }
 
     public function store(Request $request)
