@@ -119,7 +119,7 @@
                         <div class="row g-3 mt-1">
                             <div class="col-md-12">
                                 <label class="form-label fw-semibold text-body">Team</label>
-                                 <select name="team" class="form-select" required>
+                                <select name="team" class="form-select" required>
                                     <option value="" disabled selected>Select a Team</option>
                                     @foreach($teams as $team)
                                         <option value="{{ $team->name }}">{{ $team->name }}</option>
@@ -162,7 +162,12 @@
                         <div class="row g-3 mt-1">
                             <div class="col-md-12">
                                 <label class="form-label fw-semibold text-body">Team</label>
-                                <input type="text" name="team" id="edit_emp_team" class="form-control" required>
+                                <select name="team" id="edit_emp_team" class="form-select" required>
+                                    <option value="" disabled>Select a Team</option>
+                                    @foreach($teams as $team)
+                                        <option value="{{ $team->name }}">{{ $team->name }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
                 </div>

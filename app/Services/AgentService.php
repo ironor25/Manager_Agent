@@ -46,17 +46,34 @@ class AgentService
         ";
     }
     
-   public static function generateSummary(string $prompt): string
-    {
-        $response = Http::timeout(120)->post(
-            'http://localhost:11434/api/generate',
-            [
-                'model' => 'gemma3',
-                'prompt' => $prompt,
-                'stream' => false
-            ]
-        );
+    public static function generateSummary(string $prompt): string
+{
+    $apiKey = env('NVIDIA_API_KEY');
 
-        return $response->json()['response'] ?? '';
+    $response = Http::withHeaders([
+        'Authorization' => 'Bearer ' . $apiKey,
+        'Content-Type'  => 'application/json',
+    ])->post(
+        'https://integrate.api.nvidia.com/v1/chat/completions',
+        [
+            'model' => 'meta/llama-3.1-70b-instruct',
+            'messages' => [
+                [
+                    'role' => 'user',
+                    'content' => $prompt
+                ]
+            ],
+            'temperature' => 0.7,
+            'max_tokens' => 1024,
+        ]
+    );
+
+    if (!$response->successful()) {
+        throw new \Exception(
+            'NVIDIA API Error: ' . $response->body()
+        );
     }
+
+    return $response->json()['choices'][0]['message']['content'] ?? '';
+}
 }

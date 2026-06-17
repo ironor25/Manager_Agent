@@ -36,7 +36,7 @@ class EmployeeController extends Controller
 
     public function index()
     {
-         $teams = \App\Models\Team::all();
+        $teams = \App\Models\Team::all();
         return view('employees', compact('teams'));
     }
 

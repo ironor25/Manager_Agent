@@ -1,0 +1,40 @@
+# Version control
+.git
+.gitignore
+.gitattributes
+
+# Dependencies
+vendor/
+node_modules/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Testing
+tests/
+phpunit.xml
+.phpunit.result.cache
+
+# Build/Cache
+storage/logs/*
+bootstrap/cache/*
+build/
+
+# Development
+npm-debug.log
+docker-compose.override.yml
+.editorconfig
+
+# Others
+README.md
+CHANGELOG.md
