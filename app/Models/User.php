@@ -22,6 +22,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'profile_image',
+        'role',
     ];
 
     /**
@@ -50,5 +52,10 @@ class User extends Authenticatable
     public function apiKeys()
     {
         return $this->hasMany(ApiKey::class);
+    }
+
+    public function employee()
+    {
+        return $this->hasOne(Employee::class);
     }
 }

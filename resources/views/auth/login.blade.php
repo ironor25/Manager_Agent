@@ -18,7 +18,7 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #ffffff 0%, #f5f3ff 100%);
+            background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -28,15 +28,29 @@
         }
 
         .login-card {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
             border-radius: 24px;
             padding: 48px;
-            box-shadow: 0 20px 40px rgba(79, 70, 229, 0.08);
+            box-shadow: 0 25px 50px -12px rgba(14, 165, 233, 0.15);
             max-width: 450px;
             width: 100%;
             margin: 20px;
+        }
+
+        .login-logo {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            margin: 0 auto 24px auto;
+            box-shadow: 0 10px 15px -3px rgba(14, 165, 233, 0.2);
         }
 
         .form-control {
@@ -48,13 +62,19 @@
         }
 
         .form-control:focus {
-            border-color: #4f46e5;
-            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+            border-color: #0ea5e9;
+            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1);
             background-color: #ffffff;
         }
 
+        .input-group-text {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            color: #64748b;
+        }
+
         .btn-primary-custom {
-            background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
             border: none;
             color: white;
             padding: 14px;
@@ -67,18 +87,30 @@
 
         .btn-primary-custom:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.2);
+            box-shadow: 0 10px 20px rgba(14, 165, 233, 0.3);
+            background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);
         }
 
         .toast-container { z-index: 1055; }
+
+        /* Custom global cursor styles */
+        a, button, input[type="button"], input[type="submit"], input[type="checkbox"], input[type="radio"], [role="button"], label {
+            cursor: pointer !important;
+        }
+        input[type="text"], input[type="password"], input[type="email"], input:not([type]) {
+            cursor: text !important;
+        }
     </style>
 </head>
 <body>
 
     <div class="login-card">
         <div class="text-center mb-4">
+            <div class="login-logo">
+                <i class="fa-solid fa-chart-line"></i>
+            </div>
             <h2 class="fw-bold mb-2">Welcome Back</h2>
-            <p class="text-muted">Enter your credentials to access the dashboard</p>
+            <p class="text-muted">Enter your credentials to access the workspace</p>
         </div>
 
         @if($errors->any())
@@ -96,7 +128,7 @@
             <div class="mb-3">
                 <label class="form-label fw-semibold text-body">Email Address</label>
                 <div class="input-group">
-                    <span class="input-group-text bg-light border-end-0 rounded-start-3"><i class="fa-solid fa-envelope text-muted"></i></span>
+                    <span class="input-group-text border-end-0 rounded-start-3"><i class="fa-solid fa-envelope text-muted"></i></span>
                     <input type="email" name="email" class="form-control border-start-0 rounded-end-3" placeholder="admin@manager.com" required value="{{ old('email') }}">
                 </div>
             </div>
@@ -104,14 +136,14 @@
             <div class="mb-4">
                 <label class="form-label fw-semibold text-body">Password</label>
                 <div class="input-group">
-                    <span class="input-group-text bg-light border-end-0 rounded-start-3"><i class="fa-solid fa-lock text-muted"></i></span>
+                    <span class="input-group-text border-end-0 rounded-start-3"><i class="fa-solid fa-lock text-muted"></i></span>
                     <input type="password" name="password" class="form-control border-start-0 rounded-end-3" placeholder="••••••••" required>
                 </div>
             </div>
 
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="remember" name="remember">
+                    <input type="checkbox" class="form-check-input" id="remember" name="remember" style="border-color: #cbd5e1;">
                     <label class="form-check-label text-muted" for="remember">Remember me</label>
                 </div>
             </div>

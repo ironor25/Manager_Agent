@@ -37,6 +37,10 @@ class Task extends Model
         'actual_hours',
         'delay_hours',
         'priority',
+        'depends_on_task_id',
+        'project_id',
+        'timer_started_at',
+        'timer_accumulated_seconds',
     ];
 
     protected $casts = [
@@ -47,10 +51,27 @@ class Task extends Model
         'estimated_hours' => 'decimal:2',
         'actual_hours' => 'decimal:2',
         'delay_hours' => 'decimal:2',
+        'timer_started_at' => 'datetime',
+        'timer_accumulated_seconds' => 'integer',
     ];
 
     public function employee()
     {
         return $this->belongsTo(Employee::class);
+    }
+
+    public function dependsOnTask()
+    {
+        return $this->belongsTo(Task::class, 'depends_on_task_id');
+    }
+
+    public function dependentTasks()
+    {
+        return $this->hasMany(Task::class, 'depends_on_task_id');
+    }
+
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
     }
 }

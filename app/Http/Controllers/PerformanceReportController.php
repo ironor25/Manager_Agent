@@ -13,6 +13,42 @@ class PerformanceReportController extends Controller
     /**
      * Display a listing of the resource.
      */
+    protected function getEmployeeAnalytics(int $employeeId)
+    {
+        $precomputed = \App\Models\EmployeePerformanceMetric::with('employee')->where('employee_id', $employeeId)->first();
+
+        if ($precomputed) {
+            $meetingNotes = \App\Models\MeetingNote::where('employee_id', $employeeId)
+                ->latest('meeting_date')
+                ->take(15)
+                ->pluck('notes_text')
+                ->toArray();
+
+            return [
+                'employee_id' => $precomputed->employee_id,
+                'employee_name' => $precomputed->employee->name ?? 'Unknown',
+                'task_completion_rate' => $precomputed->task_completion_rate,
+                'on_time_completion_rate' => $precomputed->on_time_completion_rate,
+                'attendance_score' => $precomputed->attendance_score,
+                'git_contribution_score' => $precomputed->git_contribution_score,
+                'final_leadership_score' => $precomputed->final_score,
+                'total_tasks' => $precomputed->total_tasks,
+                'completed_tasks' => $precomputed->completed_tasks,
+                'late_tasks' => $precomputed->late_tasks,
+                'total_attendance_records' => $precomputed->total_attendance_records,
+                'git_commit_count' => $precomputed->git_commit_count,
+                'recent_commits' => $precomputed->recent_commits ?? [],
+                'commit_chart_data' => $precomputed->commit_chart_data ?? [],
+                'meeting_notes' => $meetingNotes,
+            ];
+        }
+
+        return PerformanceAnalyticsService::calculateEmployeeScore($employeeId);
+    }
+
+    /**
+     * Display a listing of the resource.
+     */
     public function generateReport(int $employeeId){
          try {
              // Check if a recent report exists within the last 7 days
@@ -22,7 +58,7 @@ class PerformanceReportController extends Controller
                  ->first();
 
              if ($existingReport) {
-                 $analytics = PerformanceAnalyticsService::calculateEmployeeScore($employeeId);
+                 $analytics = $this->getEmployeeAnalytics($employeeId);
                  $report = [
                      'summary' => $existingReport->summary,
                      'strengths' => $existingReport->strengths ?? [],
@@ -35,7 +71,7 @@ class PerformanceReportController extends Controller
              }
 
              // No valid cached report found, generate a new one
-             $analytics = PerformanceAnalyticsService::calculateEmployeeScore($employeeId);
+             $analytics = $this->getEmployeeAnalytics($employeeId);
              $prompt = AgentService::fixedPrompt($analytics);
              
              /** @var string|array|null $rawReport */
@@ -74,45 +110,46 @@ class PerformanceReportController extends Controller
         set_time_limit(0);
 
         try {
-            $employees = \App\Models\Employee::all();
             $generatedCount = 0;
             $skippedCount = 0;
 
-            foreach ($employees as $employee) {
-                $employeeId = $employee->id;
-                
-                // Check if a recent report exists within the last 7 days
-                $existingReport = Performance_report::where('employee_id', $employeeId)
-                    ->where('created_at', '>=', now()->subWeek())
-                    ->orderBy('created_at', 'desc')
-                    ->first();
+            \App\Models\Employee::chunk(200, function ($employees) use (&$generatedCount, &$skippedCount) {
+                foreach ($employees as $employee) {
+                    $employeeId = $employee->id;
+                    
+                    // Check if a recent report exists within the last 7 days
+                    $existingReport = Performance_report::where('employee_id', $employeeId)
+                        ->where('created_at', '>=', now()->subWeek())
+                        ->orderBy('created_at', 'desc')
+                        ->first();
 
-                if ($existingReport) {
-                    $skippedCount++;
-                    continue;
-                }
+                    if ($existingReport) {
+                        $skippedCount++;
+                        continue;
+                    }
 
-                $analytics = PerformanceAnalyticsService::calculateEmployeeScore($employeeId);
-                $prompt = AgentService::fixedPrompt($analytics);
+                    $analytics = $this->getEmployeeAnalytics($employeeId);
+                    $prompt = AgentService::fixedPrompt($analytics);
+                    
+                    /** @var string|array|null $rawReport */
+                    $rawReport = AgentService::generateSummary($prompt);
+                    
+                    $rawReport = str_replace(['```json', '```'], '', $rawReport);
+                    $report = json_decode(trim($rawReport), true);
                 
-                /** @var string|array|null $rawReport */
-                $rawReport = AgentService::generateSummary($prompt);
-                
-                $rawReport = str_replace(['```json', '```'], '', $rawReport);
-                $report = json_decode(trim($rawReport), true);
-               
-                if (is_array($report)) {
-                    Performance_report::create([
-                        'employee_id' => $employeeId,
-                        'leadership_score' => $report['leadership_score'] ?? 0,
-                        'summary' => $report['summary'] ?? '',
-                        'strengths' => $report['strengths'] ?? [],
-                        'weaknesses' => $report['weaknesses'] ?? [],
-                        'recommendations' => $report['recommendations'] ?? [],
-                    ]);
-                    $generatedCount++;
+                    if (is_array($report)) {
+                        Performance_report::create([
+                            'employee_id' => $employeeId,
+                            'leadership_score' => $report['leadership_score'] ?? 0,
+                            'summary' => $report['summary'] ?? '',
+                            'strengths' => $report['strengths'] ?? [],
+                            'weaknesses' => $report['weaknesses'] ?? [],
+                            'recommendations' => $report['recommendations'] ?? [],
+                        ]);
+                        $generatedCount++;
+                    }
                 }
-            }
+            });
 
             return response()->json([
                 'success' => true,

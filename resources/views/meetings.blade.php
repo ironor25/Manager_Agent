@@ -1,14 +1,31 @@
 @extends('master')
 
+@push('page-style')
+<style>
+    .dataTables_wrapper .dataTables_length select {
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        padding: 4px 24px 4px 8px;
+        min-width: 65px;
+    }
+</style>
+@endpush
+
 @section('page-content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h3 class="fw-bold mb-1 text-body">Meeting Notes</h3>
+        <h3 class="fw-bold mb-1 ">Meeting Notes</h3>
         <p class="text-muted mb-0">Review qualitative meeting outcomes</p>
     </div>
 </div>
 
-<div class="card border-0">
+<div class="card border-0 shadow-sm">
+    <div class="px-4 pt-4 pb-2 border-bottom d-flex justify-content-between align-items-center">
+        <h5 class="fw-bold mb-0">Meeting Records</h5>
+        <form action="{{ route('meetings.index') }}" method="GET" class="d-flex gap-2 align-items-center">
+            @include('components.date-filter')
+        </form>
+    </div>
     <div class="card-body p-0">
         <div class="table-responsive px-4 py-3">
             <table class="table table-hover align-middle w-100" id="meetings-table">
@@ -27,9 +44,6 @@
                         </td>
                         <td>
                             <div class="d-flex align-items-center gap-2">
-                                <div class="avatar bg-light text-primary fw-bold" style="width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem;">
-                                    {{ substr($meeting->employee->name ?? '?', 0, 1) }}
-                                </div>
                                 <span class="fw-medium text-body">{{ $meeting->employee->name ?? 'Unknown' }}</span>
                             </div>
                         </td>
@@ -57,6 +71,7 @@
 
 @push('page-script')
 <script>
+    window.disableGlobalFilterLoader = true;
     $(document).ready(function() {
         $('#meetings-table').DataTable({
             language: {
@@ -69,4 +84,5 @@
         });
     });
 </script>
+@include('components.date-filter-js')
 @endpush

@@ -14,7 +14,11 @@ class AuthController extends Controller
     {
         // If already logged in, redirect to dashboard
         if (Auth::check()) {
-            return redirect()->route('admin.dashboard');
+            if (Auth::user()->role === 'admin') {
+                return redirect()->route('admin.dashboard');
+            } else {
+                return redirect()->route('employee.dashboard');
+            }
         }
         
         return view('auth.login');
@@ -33,7 +37,9 @@ class AuthController extends Controller
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
 
-            return redirect()->intended('/dashboard')
+            $fallback = Auth::user()->role === 'admin' ? '/admin/dashboard' : '/employee/dashboard';
+
+            return redirect()->intended($fallback)
                 ->with('success', 'Welcome back, ' . Auth::user()->name . '!');
         }
 

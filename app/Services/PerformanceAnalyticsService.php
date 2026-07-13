@@ -16,11 +16,13 @@ class PerformanceAnalyticsService
         'git_contribution' => 0.20,
     ];
     
-    public static function calculateEmployeeScore(int $employeeId, ?int $gitCommitCount = null): array
+    public static function calculateEmployeeScore($employee, ?int $gitCommitCount = null): array
     {
-        $employee = self::getEmployee($employeeId);
-        $tasks = $employee->tasks()->get();
-        $attendances = $employee->attendances()->get();
+        if (!$employee instanceof Employee) {
+            $employee = self::getEmployee((int)$employee);
+        }
+        $tasks = $employee->tasks;
+        $attendances = $employee->attendances;
 
         $completedTasks = self::getCompletedTasks($tasks);
         $lateTasks = self::getLateTasks($completedTasks);
@@ -28,7 +30,7 @@ class PerformanceAnalyticsService
         $taskCompletionRate = self::calculateCompletionRate($tasks, $completedTasks);
         $onTimeCompletionRate = self::calculateOnTimeCompletionRate($completedTasks, $lateTasks);
         $attendanceScore = self::calculateAttendanceScore($attendances);
-        $gitCommitCount = $employee->github_commits()->count();
+        $gitCommitCount = $employee->github_commits->count();
         $gitContributionScore = self::calculateGitContributionScore($completedTasks, $onTimeCompletionRate, $gitCommitCount);
         $finalScore = self::calculateFinalScore($taskCompletionRate, $onTimeCompletionRate, $attendanceScore, $gitContributionScore);
 
@@ -44,16 +46,16 @@ class PerformanceAnalyticsService
             'completed_tasks' => $completedTasks->count(),
             'late_tasks' => $lateTasks->count(),
             'total_attendance_records' => $attendances->count(),
-            'meeting_notes' => $employee->meeting_notes()->pluck('notes_text')->toArray(),
+            'meeting_notes' => $employee->meeting_notes->pluck('notes_text')->toArray(),
             'git_commit_count' => $gitCommitCount,
-            'recent_commits' => $employee->github_commits()->latest('commit_date')->take(10)->pluck('commit_message')->toArray(),
+            'recent_commits' => $employee->github_commits->sortByDesc('commit_date')->take(10)->pluck('commit_message')->values()->toArray(),
             'commit_chart_data' => self::getCommitChartData($employee),
         ];
     }
 
     protected static function getEmployee(int $employeeId): Employee
     {
-        return Employee::findOrFail($employeeId);
+        return Employee::with(['tasks', 'attendances', 'github_commits', 'meeting_notes'])->findOrFail($employeeId);
     }
 
     protected static function getCompletedTasks(Collection $tasks): Collection
@@ -174,10 +176,10 @@ class PerformanceAnalyticsService
 
     protected static function getCommitChartData(Employee $employee): array
     {
-        $commits = $employee->github_commits()
+        // Use eager loaded commits
+        $commits = $employee->github_commits
             ->where('commit_date', '>=', now()->subDays(30))
-            ->orderBy('commit_date')
-            ->get();
+            ->sortBy('commit_date');
 
         $data = [];
         // Initialize last 30 days with 0

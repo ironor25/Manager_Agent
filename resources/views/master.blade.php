@@ -24,329 +24,12 @@
     <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css">
     
-    <style>
-        :root {
-            --primary: #4f46e5;
-            --primary-dark: #4338ca;
-            --secondary: #64748b;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --background: #f8fafc;
-            --surface: linear-gradient(135deg, #ffffff 0%, #f5f3ff 100%);
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --border-color: #e2e8f0;
-            --sidebar-width: 260px;
-            --header-height: 70px;
-            --table-hover-bg: #f1f5f9;
-            --table-th-bg: #f8fafc;
-            --profile-hover-bg: #f1f5f9;
-        }
-
-        [data-bs-theme="dark"] {
-            --background: #0f172a;
-            --surface: #1e293b;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --border-color: #334155;
-            --primary: #818cf8;
-            --primary-dark: #6366f1;
-            --table-hover-bg: rgba(255, 255, 255, 0.05);
-            --table-th-bg: rgba(0, 0, 0, 0.2);
-            --profile-hover-bg: rgba(255, 255, 255, 0.1);
-        }
-
-        [data-bs-theme="dark"] .bg-light {
-            background-color: var(--table-th-bg) !important;
-            color: var(--text-main) !important;
-        }
-
-        [data-bs-theme="dark"] .text-muted {
-            color: var(--text-muted) !important;
-        }
-        
-        [data-bs-theme="dark"] .form-control, 
-        [data-bs-theme="dark"] .form-select {
-            background-color: #0f172a !important;
-            border-color: var(--border-color) !important;
-            color: var(--text-main) !important;
-        }
-        
-        [data-bs-theme="dark"] canvas {
-            filter: invert(0.9) hue-rotate(180deg);
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--background);
-            color: var(--text-main);
-            overflow-x: hidden;
-            margin: 0;
-            display: flex;
-            min-height: 100vh;
-        }
-
-        /* Sidebar Styles */
-        .app-sidebar {
-            width: var(--sidebar-width);
-            background: var(--surface);
-            border-right: 1px solid var(--border-color);
-            position: fixed;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            z-index: 1040;
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 4px 0 10px rgba(0,0,0,0.02);
-        }
-        
-        .sidebar-header {
-            height: var(--header-height);
-            display: flex;
-            align-items: center;
-            padding: 0 24px;
-            border-bottom: 1px solid var(--border-color);
-            font-weight: 700;
-            font-size: 1.25rem;
-            color: var(--primary);
-        }
-
-        .sidebar-menu {
-            padding: 20px 0;
-            flex: 1;
-            overflow-y: auto;
-        }
-
-        .menu-item {
-            padding: 12px 24px;
-            display: flex;
-            align-items: center;
-            color: var(--text-muted);
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            margin: 4px 16px;
-            border-radius: 8px;
-        }
-
-        .menu-item:hover, .menu-item.active {
-            background: rgba(79, 70, 229, 0.08);
-            color: var(--primary);
-        }
-
-        .menu-item.text-danger:hover {
-            background: rgba(239, 68, 68, 0.08) !important;
-            color: var(--danger) !important;
-        }
-
-        .menu-item i {
-            margin-right: 12px;
-            font-size: 1.1rem;
-            width: 20px;
-            text-align: center;
-        }
-
-        /* Main Content Wrapper */
-        .app-wrapper {
-            flex: 1;
-            margin-left: var(--sidebar-width);
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            transition: all 0.3s ease;
-            width: calc(100% - var(--sidebar-width));
-        }
-
-        /* Header Styles */
-        .app-header {
-            height: var(--header-height);
-            background: var(--surface);
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 24px;
-            position: sticky;
-            top: 0;
-            z-index: 1030;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
-        }
-
-        .header-title {
-            font-weight: 600;
-            font-size: 1.1rem;
-            color: var(--text-main);
-            margin: 0;
-        }
-
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            cursor: pointer;
-            padding: 6px 12px;
-            border-radius: 50px;
-            transition: background 0.2s;
-        }
-
-        .user-profile:hover {
-            background: var(--profile-hover-bg);
-        }
-
-        .avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: var(--primary);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-        }
-
-        /* Main Content Area */
-        .main-content {
-            flex: 1;
-            padding: 32px;
-        }
-
-        /* Footer */
-        .app-footer {
-            background: var(--surface);
-            border-top: 1px solid var(--border-color);
-            padding: 20px 32px;
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-
-        /* Global UI Elements */
-        .bg-white { background: var(--surface) !important; }
-
-        .card {
-            background: var(--surface);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
-            margin-bottom: 24px;
-            overflow: hidden;
-        }
-
-        .card-header {
-            background: var(--surface);
-            border-bottom: 1px solid var(--border-color);
-            padding: 20px 24px;
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-
-        .card-body {
-            padding: 24px;
-        }
-
-        .btn-primary {
-            background-color: var(--primary);
-            border-color: var(--primary);
-            font-weight: 500;
-            padding: 8px 16px;
-            border-radius: 8px;
-            transition: all 0.2s;
-        }
-
-        .btn-primary:hover {
-            background-color: var(--primary-dark);
-            border-color: var(--primary-dark);
-            transform: translateY(-1px);
-        }
-
-        /* Tables */
-        .table {
-            margin-bottom: 0;
-            width: 100% !important;
-        }
-        
-        .table th {
-            background: var(--table-th-bg);
-            color: var(--text-muted);
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            letter-spacing: 0.5px;
-            padding: 16px;
-            border-bottom: 2px solid var(--border-color);
-        }
-        
-        .table td {
-            padding: 16px;
-            vertical-align: middle;
-            color: var(--text-main);
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .table-hover tbody tr:hover {
-            background-color: var(--table-hover-bg);
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
-
-        /* Toast & Modals */
-        .modal-content {
-            border: none;
-            border-radius: 16px;
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
-        }
-        
-        .modal-header {
-            border-bottom: 1px solid var(--border-color);
-            padding: 24px;
-        }
-        
-        .modal-body {
-            padding: 24px;
-        }
-
-        /* Responsive */
-        @media (max-width: 991.98px) {
-            .app-sidebar {
-                transform: translateX(-100%);
-            }
-            .app-sidebar.show {
-                transform: translateX(0);
-            }
-            .app-wrapper {
-                margin-left: 0;
-                width: 100%;
-            }
-            .sidebar-overlay {
-                position: fixed;
-                top: 0; left: 0; right: 0; bottom: 0;
-                background: rgba(0,0,0,0.5);
-                z-index: 1035;
-                display: none;
-            }
-            .sidebar-overlay.show {
-                display: block;
-            }
-        }
-    </style>
+    <!-- Premium Theme CSS -->
+    <link href="{{ asset('css/premium-theme.css') }}" rel="stylesheet">
+    
+    <!-- html2pdf.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
     @stack('page-style')
 </head>
 <body>
@@ -375,6 +58,9 @@
     
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Marked.js for Markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <script>
         // Sidebar Toggle Logic
@@ -421,6 +107,133 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
+
+        // Prevent DataTables from showing pop-up alerts on aborted/failed Ajax calls
+        if ($.fn.dataTable) {
+            $.fn.dataTable.ext.errMode = 'throw';
+        }
+
+        // Global PDF Export Helper for Graph-Based Analysis pages
+        window.exportPageToPDF = function(elementSelector, filename) {
+            // Using browser native print-to-pdf which is more reliable 
+            // and doesn't conflict with DOM elements like html2pdf
+            if (filename) {
+                document.title = filename.replace('.pdf', '');
+            }
+            window.print();
+        };
+
+        // Global DataTable Excel/CSV Export Helper (handles server-side and client-side tables)
+        window.exportDataTableToCSV = function(tableSelector, filename) {
+            const table = $(tableSelector).DataTable();
+            const ajaxUrl = table.ajax.url();
+            
+            if (!ajaxUrl) {
+                window.exportDOMTableToCSV(tableSelector, filename);
+                return;
+            }
+
+            const loader = $('<div id="excel-export-loader" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.75);z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column;backdrop-filter:blur(2px);"><div class="spinner-border text-success" role="status"></div><div class="mt-2 fw-semibold">Preparing Excel Export...</div></div>');
+            $('body').append(loader);
+
+            // Clone active search and sort params but fetch all rows
+            const params = $.extend(true, {}, table.ajax.params());
+            params.length = 100000;
+            params.start = 0;
+
+            $.ajax({
+                url: ajaxUrl,
+                data: params,
+                dataType: 'json',
+                success: function(response) {
+                    loader.remove();
+                    const data = response.data || [];
+                    const columns = table.settings()[0].aoColumns;
+                    
+                    // Filter out action columns and columns with no valid titles
+                    const validCols = columns.filter(col => {
+                        const hasData = col.data !== undefined && col.data !== null;
+                        const isAction = col.data === 'action' || col.data === 'actions' || (col.sTitle && (col.sTitle.toLowerCase().includes('action') || col.sTitle.toLowerCase().includes('edit')));
+                        return hasData && !isAction;
+                    });
+                    
+                    // Build CSV Header
+                    const headers = validCols.map(col => col.sTitle || col.data);
+                    let csvContent = "\uFEFF"; // UTF-8 BOM for Excel compatibility
+                    csvContent += headers.map(h => `"${String(h).replace(/"/g, '""')}"`).join(",") + "\n";
+                    
+                    // Build CSV Rows
+                    data.forEach(row => {
+                        const rowData = validCols.map(col => {
+                            let val = '';
+                            if (typeof col.data === 'function') {
+                                val = col.data(row, 'display');
+                            } else if (col.data && row[col.data] !== undefined) {
+                                val = row[col.data];
+                            } else if (col.name && row[col.name] !== undefined) {
+                                val = row[col.name];
+                            }
+                            
+                            if (val === null || val === undefined) {
+                                val = '';
+                            } else {
+                                // Strip HTML tags and clean up string for CSV format
+                                val = String(val).replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+                                val = val.replace(/"/g, '""');
+                            }
+                            return `"${val}"`;
+                        });
+                        csvContent += rowData.join(",") + "\n";
+                    });
+                    
+                    // Trigger browser download
+                    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                    const link = document.createElement("a");
+                    const url = URL.createObjectURL(blob);
+                    link.setAttribute("href", url);
+                    link.setAttribute("download", filename || 'export.csv');
+                    link.style.visibility = 'hidden';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                },
+                error: function(err) {
+                    loader.remove();
+                    console.error('Export failed:', err);
+                    alert('Failed to export data to Excel.');
+                }
+            });
+        };
+
+        // Fallback DOM Table CSV Exporter (for static or fully rendered tables)
+        window.exportDOMTableToCSV = function(tableSelector, filename) {
+            const table = $(tableSelector);
+            let csvContent = "\uFEFF"; // UTF-8 BOM
+            
+            table.find('tr').each(function() {
+                const rowData = [];
+                $(this).find('th, td').each(function() {
+                    const text = $(this).text().trim();
+                    const isAction = $(this).find('button, a').length > 0 || text.toLowerCase().includes('action');
+                    if (!isAction) {
+                        rowData.push(`"${text.replace(/"/g, '""')}"`);
+                    }
+                });
+                if (rowData.length > 0) {
+                    csvContent += rowData.join(",") + "\n";
+                }
+            });
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", filename || 'export.csv');
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        };
     </script>
     
     <!-- Global Toast Notification -->
@@ -444,6 +257,10 @@
         });
     </script>
     @endif
+
+    @auth
+        @include('ai-agent.widget')
+    @endauth
 
     @stack('page-script')
 </body>

@@ -4,7 +4,7 @@
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1 class="h3 mb-0 text-body fw-bold">Developer Tools</h1>
+            <h1 class="h3 mb-0  fw-bold">Developer Tools</h1>
             <p class="text-muted mb-0">Manage API Keys and integrate external systems.</p>
         </div>
     </div>
@@ -23,7 +23,7 @@
         <!-- API Keys Management -->
         <div class="col-lg-12 mb-4">
             <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center py-3">
+                <div class="card-header border-bottom d-flex justify-content-between align-items-center py-3">
                     <h5 class="mb-0 fw-bold"><i class="fa-solid fa-key text-primary me-2"></i> API Keys</h5>
                     <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#generateKeyModal">
                         <i class="fa-solid fa-plus me-1"></i> Generate API Key
@@ -48,7 +48,7 @@
                                     <td class="fw-medium">{{ $key->name }}</td>
                                     <td>
                                         <div class="input-group input-group-sm" style="max-width: 280px;">
-                                            <input type="password" class="form-control bg-light" value="{{ $key->api_key }}" id="key-{{ $key->id }}" readonly>
+                                            <input type="password" class="form-control" value="{{ $key->api_key }}" id="key-{{ $key->id }}" readonly>
                                             <button class="btn btn-outline-secondary" type="button" onclick="toggleVisibility('key-{{ $key->id }}')" title="Toggle Visibility">
                                                 <i class="fa-regular fa-eye"></i>
                                             </button>
@@ -100,7 +100,7 @@
         <!-- API Documentation -->
         <div class="col-lg-8 mb-4">
             <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-white border-bottom py-3">
+                <div class="card-header border-bottom py-3">
                     <h5 class="mb-0 fw-bold"><i class="fa-solid fa-book text-primary me-2"></i> API Documentation</h5>
                 </div>
                 <div class="card-body">
@@ -435,7 +435,7 @@ print(response.json())</code></pre>
         <!-- API Tester -->
         <div class="col-lg-4 mb-4">
             <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-white border-bottom py-3">
+                <div class="card-header border-bottom py-3">
                     <h5 class="mb-0 fw-bold"><i class="fa-solid fa-flask text-primary me-2"></i> API Tester</h5>
                 </div>
                 <div class="card-body">
@@ -466,7 +466,7 @@ print(response.json())</code></pre>
                     </form>
 
                     <div class="mt-4 d-none" id="responseContainer">
-                        <h6 class="fw-bold text-muted small mb-2">Response JSON</h6>
+                        <h6 class="fw-bold  small mb-2">Response JSON</h6>
                         <pre class="p-3 rounded border" id="responseOutput" style="max-height: 250px; overflow-y: auto; font-size: 0.85rem; margin-bottom: 0;"></pre>
                     </div>
                 </div>
@@ -572,4 +572,3 @@ print(response.json())</code></pre>
     }
 </script>
 @endpush
-

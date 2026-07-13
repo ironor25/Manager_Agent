@@ -230,7 +230,7 @@
                     <i class="fa-solid fa-user-tie"></i>
                 </div>
                 <div class="z-1">
-                    <h6 class="text-muted text-uppercase fw-bold mb-2 tracking-wide"><i class="fa-solid fa-id-badge me-2"></i>Employee Performance Overview</h6>
+                    <h6 class=" text-uppercase fw-bold mb-2 tracking-wide"><i class="fa-solid fa-id-badge me-2"></i>Employee Performance Overview</h6>
                     <h1 class="display-4 fw-bolder mb-4 text-gradient-primary">{{ $report['employee_name'] }}</h1>
                     <div class="d-flex flex-wrap align-items-center gap-3">
                         <span class="status-badge {{ $badgeClass }}">
@@ -247,7 +247,7 @@
         <!-- Leaderboard Score Card -->
         <div class="col-lg-4 fade-in-up delay-1">
             <div class="premium-card h-100 p-4 p-md-5 text-center d-flex flex-column justify-content-center">
-                <h5 class="fw-bold text-body mb-4 text-uppercase tracking-wide">Final Leadership Score</h5>
+                <h5 class="fw-bold  mb-4 text-uppercase tracking-wide">Final Leadership Score</h5>
                 <div class="score-circle mx-auto">
                     <div class="score-value">{{ $report['final_leadership_score'] }}</div>
                     <div class="score-label">/ 100</div>
@@ -263,8 +263,8 @@
             <div class="premium-card p-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <div>
-                        <h6 class="text-muted fw-bold mb-1">Task Completion Rate</h6>
-                        <h3 class="fw-bold mb-0 text-body">{{ $report['task_completion_rate'] }}%</h3>
+                        <h6 class=" fw-bold mb-1">Task Completion Rate</h6>
+                        <h3 class="fw-bold mb-0 ">{{ $report['task_completion_rate'] }}%</h3>
                     </div>
                     <div class="icon-box" style="background: var(--info-gradient);">
                         <i class="fa-solid fa-list-check"></i>
@@ -281,8 +281,8 @@
             <div class="premium-card p-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <div>
-                        <h6 class="text-muted fw-bold mb-1">On-Time Delivery Rate</h6>
-                        <h3 class="fw-bold mb-0 text-body">{{ $report['on_time_completion_rate'] }}%</h3>
+                        <h6 class=" fw-bold mb-1">On-Time Delivery Rate</h6>
+                        <h3 class="fw-bold mb-0 ">{{ $report['on_time_completion_rate'] }}%</h3>
                     </div>
                     <div class="icon-box" style="background: var(--warning-gradient);">
                         <i class="fa-solid fa-clock"></i>
@@ -299,8 +299,8 @@
             <div class="premium-card p-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <div>
-                        <h6 class="text-muted fw-bold mb-1">Attendance Score</h6>
-                        <h3 class="fw-bold mb-0 text-body">{{ $report['attendance_score'] }}%</h3>
+                        <h6 class=" fw-bold mb-1">Attendance Score</h6>
+                        <h3 class="fw-bold mb-0 ">{{ $report['attendance_score'] }}%</h3>
                     </div>
                     <div class="icon-box" style="background: var(--success-gradient);">
                         <i class="fa-solid fa-calendar-check"></i>
@@ -317,8 +317,8 @@
             <div class="premium-card p-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <div>
-                        <h6 class="text-muted fw-bold mb-1">Git Contribution</h6>
-                        <h3 class="fw-bold mb-0 text-body">{{ $report['git_contribution_score'] }}%</h3>
+                        <h6 class=" fw-bold mb-1">Git Contribution</h6>
+                        <h3 class="fw-bold mb-0 ">{{ $report['git_contribution_score'] }}%</h3>
                     </div>
                     <div class="icon-box" style="background: linear-gradient(135deg, #434343 0%, #000000 100%);">
                         <i class="fa-brands fa-git-alt"></i>
@@ -406,4 +406,3 @@
 </div>
 
 @endsection
-

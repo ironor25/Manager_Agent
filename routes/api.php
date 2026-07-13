@@ -10,6 +10,9 @@ use App\Models\Attendance;
 use App\Models\Performance_report;
 use App\Models\TeamReport;
 
+Route::post('/webhook/gitlab', [\App\Http\Controllers\GitlabWebhookController::class, 'handle'])
+    ->middleware(\App\Http\Middleware\ValidateGitlabWebhook::class);
+
 Route::middleware([ValidateApiKey::class])->group(function () {
     // Read Endpoints
     Route::get('/employees', function () {

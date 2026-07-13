@@ -23,59 +23,127 @@ class TeamDashboardController extends Controller
      */
     public function index()
     {
-        $teams = $this->analyticsService->getAllTeams();
-        $totalTeams = count($teams);
+        return view('team-dashboard');
+    }
 
-        // Calculate average team score across all teams
-        $totalScore = 0;
+    /**
+     * Display the Team Management Dashboard.
+     */
+    public function management()
+    {
+        $teams = \App\Models\Team::select('name')->get();
+        return view('team-management', compact('teams'));
+    }
+
+    /**
+     * Return JSON data for the Teams Yajra DataTable.
+     */
+    public function getTeamsData(Request $request)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            $data = \App\Models\Team::withCount('employees');
+
+            return \Yajra\DataTables\Facades\DataTables::of($data)
+                ->addColumn('action', function($row) {
+                    return '
+                        <div class="d-flex justify-content-end align-items-center gap-2">
+                            <button class="action-btn edit-team-btn" data-team="'.htmlspecialchars($row->name, ENT_QUOTES, 'UTF-8').'" data-desc="'.htmlspecialchars($row->description ?? '', ENT_QUOTES, 'UTF-8').'" title="Edit Team">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            <button class="action-btn delete-btn trigger-team-delete" data-team="'.htmlspecialchars($row->name, ENT_QUOTES, 'UTF-8').'" title="Delete Team">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    ';
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+    }
+
+    public function getKpis(Request $request)
+    {
+        $period = $request->get('period', 7);
+        $metrics = \App\Models\TeamPerformanceMetric::where('period', $period)->get();
+        
+        if ($metrics->isEmpty()) {
+            $kpis = $this->analyticsService->getDashboardKpis($period);
+            return response()->json($kpis);
+        }
+
+        $totalTeams = $metrics->count();
+        $totalScore = $metrics->sum('leadership_score');
+        
         $bestTeamName = 'N/A';
         $highestScore = -1;
-
-        foreach ($teams as $team) {
-            $efficiency = $this->analyticsService->calculateTeamEfficiency($team);
-            $totalScore += $efficiency;
-
-            if ($efficiency > $highestScore) {
-                $highestScore = $efficiency;
-                $bestTeamName = $team;
+        foreach ($metrics as $m) {
+            if ($m->leadership_score > $highestScore) {
+                $highestScore = $m->leadership_score;
+                $bestTeamName = $m->team_name;
             }
         }
 
         $averageTeamScore = $totalTeams > 0 ? round($totalScore / $totalTeams, 2) : 0;
-        
-        $teamModels = \App\Models\Team::with('employees')->get();
-        $allEmployees = \App\Models\Employee::all();
 
-        return view('team-dashboard', compact('totalTeams', 'bestTeamName', 'averageTeamScore', 'teamModels', 'allEmployees'));
+        return response()->json([
+            'totalTeams' => $totalTeams,
+            'bestTeamName' => $bestTeamName,
+            'averageTeamScore' => $averageTeamScore
+        ]);
     }
 
-    /**
-     * Return JSON data for the Chart.js grouped bar chart.
-     */
-    public function getChartData()
+    public function getChartData(Request $request)
     {
-        $teams = $this->analyticsService->getAllTeams();
-        $chartData = [];
+        $period = $request->get('period', 7);
+        $metrics = \App\Models\TeamPerformanceMetric::where('period', $period)->get();
 
-        foreach ($teams as $team) {
-            $chartData[] = [
-                'team' => $team,
-                'attendance_score' => $this->analyticsService->calculateAverageAttendance($team),
-                'task_completion' => $this->analyticsService->calculateAverageTaskCompletion($team),
-                'leadership_score' => $this->analyticsService->calculateTeamEfficiency($team),
-                'git_contribution' => $this->analyticsService->calculateAverageGitContribution($team),
-            ];
+        if ($metrics->isEmpty()) {
+            $chartData = $this->analyticsService->getBulkChartData($period);
+            return response()->json($chartData);
         }
+
+        $chartData = $metrics->map(function($m) {
+            return [
+                'team' => $m->team_name,
+                'attendance_score' => $m->attendance_score,
+                'task_completion' => $m->task_completion_score,
+                'leadership_score' => $m->leadership_score,
+                'git_contribution' => $m->git_contribution_score,
+            ];
+        })->toArray();
 
         return response()->json($chartData);
     }
 
-    /**
-     * Return JSON data for the Leaderboard table.
-     */
-    public function leaderboard()
+    public function getMembersList($teamName)
     {
-        $leaderboard = $this->analyticsService->getLeaderboard();
+        $members = \App\Models\Employee::where('team', $teamName)
+            ->select('id', 'name')
+            ->get();
+            
+        return response()->json($members);
+    }
+
+    public function leaderboard(Request $request)
+    {
+        $period = $request->get('period', 7);
+        $metrics = \App\Models\TeamPerformanceMetric::where('period', $period)
+            ->orderByDesc('leadership_score')
+            ->get();
+
+        if ($metrics->isEmpty()) {
+            $leaderboard = $this->analyticsService->getLeaderboard($period);
+            return response()->json($leaderboard);
+        }
+
+        $leaderboard = $metrics->map(function($m) {
+            return [
+                'team_name' => $m->team_name,
+                'efficiency_score' => $m->leadership_score,
+                'top_performers' => $m->top_performers ?? [],
+            ];
+        })->toArray();
+
         return response()->json($leaderboard);
     }
 
@@ -87,10 +155,12 @@ class TeamDashboardController extends Controller
         try {
             // This interacts with AI and DB
             $report = $this->reportService->generateTeamReport($team);
+            $members = \App\Models\Employee::where('team', $team)->select('id', 'name')->get();
 
             return response()->json([
                 'success' => true,
                 'report' => $report,
+                'members' => $members,
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -119,7 +189,7 @@ class TeamDashboardController extends Controller
                 ->update(['team' => $team->name]);
         }
 
-        return redirect(route('teams.dashboard') . '#management')->with('success', 'Team created successfully with ' . count($request->employee_ids ?? []) . ' members.');
+        return redirect()->route('teams.management')->with('success', 'Team created successfully with ' . count($request->employee_ids ?? []) . ' members.');
     }
 
     public function updateTeam(Request $request, $teamName)
@@ -133,7 +203,7 @@ class TeamDashboardController extends Controller
             'description' => $request->description,
         ]);
 
-        return redirect(route('teams.dashboard') . '#management')->with('success', 'Team updated successfully.');
+        return redirect()->route('teams.management')->with('success', 'Team updated successfully.');
     }
 
     public function destroyTeam($teamName)
@@ -145,7 +215,7 @@ class TeamDashboardController extends Controller
         
         $team->delete();
 
-        return redirect(route('teams.dashboard') . '#management')->with('success', 'Team deleted successfully.');
+        return redirect()->route('teams.management')->with('success', 'Team deleted successfully.');
     }
 
     public function addMember(Request $request, $teamName)
@@ -159,7 +229,7 @@ class TeamDashboardController extends Controller
         
         $employee->update(['team' => $team->name]);
 
-        return redirect(route('teams.dashboard') . '#management')->with('success', 'Member added to team.');
+        return redirect()->back()->with('success', 'Member added to team.');
     }
 
     public function removeMember($teamName, $employeeId)
@@ -170,16 +240,44 @@ class TeamDashboardController extends Controller
             $employee->update(['team' => null]);
         }
 
-        return redirect(route('teams.dashboard') . '#management')->with('success', 'Member removed from team.');
+        return redirect()->back()->with('success', 'Member removed from team.');
     }
 
     public function show($teamName)
     {
-        $team = \App\Models\Team::with(['employees' => function($q) {
-            $q->with('performance_reports');
-        }])->findOrFail($teamName);
+        $team = \App\Models\Team::findOrFail($teamName);
+        $totalMembersCount = \App\Models\Employee::where('team', $teamName)->count();
 
-        return view('team-details', compact('team'));
+        return view('team-details', compact('team', 'totalMembersCount'));
+    }
+
+    public function getTeamMembersData(Request $request, $teamName)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            $data = \App\Models\Employee::where('team', $teamName)
+                ->select(['id', 'name', 'email']);
+
+            return \Yajra\DataTables\Facades\DataTables::of($data)
+                ->addColumn('action', function($row) use ($teamName) {
+                    $removeUrl = route('teams.members.remove', [$teamName, $row->id]);
+                    return '
+                        <div class="d-flex justify-content-end align-items-center gap-2">
+                            <button class="report-btn generate-individual-report-btn" data-id="'.$row->id.'" data-name="'.htmlspecialchars($row->name, ENT_QUOTES, 'UTF-8').'">
+                                <i class="fa-solid fa-chart-simple me-1"></i> Individual Performance
+                            </button>
+                            <form action="'.$removeUrl.'" method="POST" class="d-inline remove-member-form" onsubmit="return confirm(\'Are you sure you want to remove this employee from this team?\');">
+                                '.csrf_field().'
+                                '.method_field('DELETE').'
+                                <button type="submit" class="btn btn-sm btn-light text-danger border-0">
+                                    <i class="fa-solid fa-user-minus me-1"></i> Remove
+                                </button>
+                            </form>
+                        </div>
+                    ';
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+        }
     }
 
     public function assignTask(Request $request)

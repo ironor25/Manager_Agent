@@ -18,7 +18,8 @@
     .dataTables_wrapper .dataTables_length select {
         border: 1px solid var(--border-color);
         border-radius: 6px;
-        padding: 4px 8px;
+        padding: 4px 24px 4px 8px;
+        min-width: 65px;
     }
     .page-item.active .page-link {
         background-color: var(--primary);
@@ -61,7 +62,7 @@
 @section('page-content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h3 class="fw-bold mb-1 text-body">Employees List</h3>
+        <h3 class="fw-bold mb-1 ">Employees List</h3>
         <p class="text-muted mb-0">Manage and track your team members</p>
     </div>
     <div class="d-flex gap-2">
@@ -84,6 +85,7 @@
                         <th>Employee Details</th>
                         <th>Email</th>
                         <th>Team</th>
+                        <th>Designation</th>
                         <th width="150" class="text-end">Actions</th>
                     </tr>
                 </thead>
@@ -100,7 +102,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0">
             <div class="modal-header border-0 pb-0 pt-4 px-4 d-flex justify-content-between align-items-center">
-                <h5 class="modal-title fw-bold text-body">
+                <h5 class="modal-title fw-bold ">
                     <i class="fa-solid fa-user-plus text-primary me-2"></i> Add Employee
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -142,7 +144,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0">
             <div class="modal-header border-0 pb-0 pt-4 px-4 d-flex justify-content-between align-items-center">
-                <h5 class="modal-title fw-bold text-body">
+                <h5 class="modal-title fw-bold ">
                     <i class="fa-solid fa-user-pen text-primary me-2"></i> Edit Employee
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -203,7 +205,7 @@
 
 <!-- Performance Modal -->
 <div class="modal fade" id="performanceModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content border-0">
             <div class="modal-header border-0 pb-0 pt-4 px-4 d-flex justify-content-between align-items-center">
                 <h5 class="modal-title fw-bold">
@@ -215,53 +217,62 @@
                 <!-- Loader -->
                 <div class="text-center py-5" id="report-loader">
                     <div class="spinner-border text-primary mb-3" role="status"></div>
-                    <h6 class="text-muted fw-medium">Generating AI Insights...</h6>
+                    <h6 class=" fw-medium">Generating AI Insights...</h6>
                 </div>
                 
                 <!-- Report Container -->
                 <div id="report-container" style="display: none;">
-                    <div class="p-4 bg-light rounded-3 mb-4 text-center">
-                        <h6 class="text-uppercase text-muted fw-bold mb-2" style="font-size: 0.8rem; letter-spacing: 1px;">Leadership Score</h6>
-                        <h1 class="display-4 fw-bolder text-body mb-2" id="report-score">0</h1>
-                        <span class="badge" id="report-status" style="font-size: 0.9rem; padding: 8px 16px;">Status</span>
-                    </div>
+                    <div class="row g-3">
+                        <!-- Left Column: Leadership Score, Summary, Git Commit Chart -->
+                        <div class="col-md-5 d-flex flex-column gap-3">
+                            <!-- Score and Status -->
+                            <div class="p-3 bg-light rounded-3 text-center border">
+                                <h6 class="text-uppercase  fw-bold mb-1" style="font-size: 0.75rem; letter-spacing: 1px;">Leadership Score</h6>
+                                <div class="d-flex align-items-center justify-content-center gap-3">
+                                    <h2 class="fw-bolder  mb-0" id="report-score" style="font-size: 2.2rem; line-height: 1;">0</h2>
+                                    <span class="badge" id="report-status" style="font-size: 0.85rem; padding: 6px 12px;">Status</span>
+                                </div>
+                            </div>
+                            
+                            <!-- AI Summary -->
+                            <div class="p-3 border rounded-3 bg-white flex-grow-1">
+                                <h6 class="fw-bold text-primary mb-2" style="font-size: 0.95rem;"><i class="fa-solid fa-file-lines me-2"></i>AI Summary</h6>
+                                <p id="report-summary" class="text-muted lh-lg mb-0" style="font-size: 0.875rem;"></p>
+                            </div>
 
-                    <div class="mb-4">
-                        <h6 class="fw-bold mb-3 text-body">AI Summary</h6>
-                        <p id="report-summary" class="text-muted lh-lg mb-0"></p>
-                    </div>
-
-                    <div class="row g-4">
-                        <div class="col-md-4">
-                            <div class="p-3 border rounded-3 h-100 bg-white">
-                                <h6 class="fw-bold text-success mb-3"><i class="fa-solid fa-arrow-trend-up me-2"></i>Strengths</h6>
-                                <div id="report-strengths" class="d-flex flex-column gap-2 text-muted" style="font-size: 0.9rem;"></div>
+                            <!-- Git Commit Chart -->
+                            <div class="p-3 border rounded-3 bg-white">
+                                <h6 class="fw-bold  mb-2" style="font-size: 0.95rem;"><i class="fa-brands fa-git-alt me-2 text-dark"></i>Git Commits (Last 30 Days)</h6>
+                                <div style="height: 180px; position: relative;">
+                                    <canvas id="employeeCommitChart"></canvas>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="p-3 border rounded-3 h-100 bg-white">
-                                <h6 class="fw-bold text-danger mb-3"><i class="fa-solid fa-arrow-trend-down me-2"></i>Weaknesses</h6>
-                                <div id="report-weaknesses" class="d-flex flex-column gap-2 text-muted" style="font-size: 0.9rem;"></div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="p-3 border rounded-3 h-100 bg-white">
-                                <h6 class="fw-bold text-warning mb-3"><i class="fa-regular fa-lightbulb me-2"></i>Recommendations</h6>
-                                <div id="report-recommendations" class="d-flex flex-column gap-2 text-muted" style="font-size: 0.9rem;"></div>
-                            </div>
-                        </div>
-                    </div>
 
-                    <!-- Git Commit Chart -->
-                    <div class="mt-4 p-4 border rounded-3 bg-white">
-                        <h6 class="fw-bold text-body mb-3"><i class="fa-brands fa-git-alt me-2 text-dark"></i>Git Commits (Last 30 Days)</h6>
-                        <div style="height: 250px; position: relative;">
-                            <canvas id="employeeCommitChart"></canvas>
+                        <!-- Right Column: Strengths, Weaknesses, Recommendations -->
+                        <div class="col-md-7 d-flex flex-column gap-3">
+                            <!-- Strengths -->
+                            <div class="p-3 border rounded-3 bg-white flex-grow-1">
+                                <h6 class="fw-bold text-success mb-2" style="font-size: 0.95rem;"><i class="fa-solid fa-circle-check me-2"></i>Key Strengths</h6>
+                                <div id="report-strengths" class="d-flex flex-column gap-2 text-muted" style="font-size: 0.875rem;"></div>
+                            </div>
+
+                            <!-- Weaknesses -->
+                            <div class="p-3 border rounded-3 bg-white flex-grow-1">
+                                <h6 class="fw-bold text-danger mb-2" style="font-size: 0.95rem;"><i class="fa-solid fa-circle-xmark me-2"></i>Areas for Improvement</h6>
+                                <div id="report-weaknesses" class="d-flex flex-column gap-2 text-muted" style="font-size: 0.875rem;"></div>
+                            </div>
+
+                            <!-- Recommendations -->
+                            <div class="p-3 border rounded-3 bg-light">
+                                <h6 class="fw-bold text-warning mb-2" style="font-size: 0.95rem;"><i class="fa-regular fa-lightbulb me-2"></i>Recommendations</h6>
+                                <div id="report-recommendations" class="d-flex flex-column gap-2 text-muted" style="font-size: 0.875rem;"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="modal-footer bg-light border-0 py-3 mt-4">
+            <div class="modal-footer bg-light border-0 py-3 mt-3">
                 <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
@@ -276,7 +287,7 @@
                     <div class="avatar bg-primary text-white fw-bold" id="detail-emp-avatar" style="width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
                     </div>
                     <div>
-                        <h5 class="modal-title fw-bold text-body mb-0" id="detail-emp-name"></h5>
+                        <h5 class="modal-title fw-bold  mb-0" id="detail-emp-name"></h5>
                         <p class="text-muted mb-0 small" id="detail-emp-email-team"></p>
                     </div>
                 </div>
@@ -326,6 +337,7 @@
                 }},
                 { data: 'email', name: 'email', render: function(data) { return `<span class="text-muted small">${data}</span>`; } },
                 { data: 'team', name: 'team', render: function(data) { return `<span class="fw-medium">${data}</span>`; } },
+                { data: 'designation', name: 'designation', render: function(data) { return data ? `<span class="fw-medium text-muted">${data}</span>` : `<span class="text-muted fst-italic">None</span>`; } },
                 { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-end' }
             ],
             language: {
@@ -356,7 +368,7 @@
             modal.show();
 
             $.ajax({
-                url: '/employees/' + employeeId + '/details',
+                url: '/admin/employees/' + employeeId + '/details',
                 type: 'GET',
                 success: function(response) {
                     var tasks = response.tasks;
@@ -381,7 +393,7 @@
                                 <div class="card border border-light bg-white shadow-sm mb-2 rounded-3">
                                     <div class="card-body p-3">
                                         <div class="d-flex justify-content-between align-items-start mb-2">
-                                            <h6 class="fw-bold mb-0 text-body">${task.title}</h6>
+                                            <h6 class="fw-bold mb-0 ">${task.title}</h6>
                                             <div class="d-flex gap-1">${priorityBadge} ${statusBadge}</div>
                                         </div>
                                         <p class="text-muted small mb-2">${task.description || 'No description provided.'}</p>
@@ -413,7 +425,7 @@
         // Edit Employee Modal
         $('body').on('click', '.edit-emp-btn', function() {
             var emp = $(this).data('emp');
-            $('#editEmpForm').attr('action', '/employees/' + emp.id);
+            $('#editEmpForm').attr('action', '/admin/employees/management/' + emp.id);
             $('#edit_emp_name').val(emp.name);
             $('#edit_emp_email').val(emp.email);
             $('#edit_emp_team').val(emp.team);
@@ -432,7 +444,7 @@
         // Handle Performance Button Click
         $('body').on('click', '.view-performance-btn', function() {
             var employeeId = $(this).data('id');
-            var url = "/employee/" + employeeId + "/report";
+            var url = "/admin/employee/" + employeeId + "/report";
             
             $('#performanceModal').modal('show');
             $('#report-loader').show();
@@ -460,7 +472,7 @@
                         statusBadge.text('Needs Improvement').removeClass('bg-success bg-primary text-white').addClass('bg-warning text-body');
                     }
 
-                    const formatList = (arr, iconClass) => arr && arr.length ? arr.map(item => `<div><i class="${iconClass} me-2"></i>${item}</div>`).join('') : '<span class="text-muted fst-italic">None recorded</span>';
+                    const formatList = (arr, iconClass) => arr && arr.length ? arr.map(item => `<div class="d-flex gap-2 mb-2"><i class="${iconClass} mt-1"></i><span>${item}</span></div>`).join('') : '<span class="text-muted fst-italic">None recorded</span>';
 
                     $('#report-strengths').html(formatList(response.strengths, 'fa-solid fa-check text-success'));
                     $('#report-weaknesses').html(formatList(response.weaknesses, 'fa-solid fa-xmark text-danger'));
@@ -573,4 +585,3 @@
     });
 </script>
 @endpush
-

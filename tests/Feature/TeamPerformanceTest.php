@@ -13,12 +13,13 @@ class TeamPerformanceTest extends TestCase
     {
         $this->seed();
 
-        $response = $this->get('/teams/performance');
+        $user = \App\Models\User::factory()->create();
+
+        $response = $this->actingAs($user)->get('/admin/teams');
 
         $response->assertStatus(200);
-        $response->assertViewIs('team-performance');
-        $response->assertViewHas('teamReports');
-        $response->assertSee('Compare Team Performances');
+        $response->assertViewIs('team-dashboard');
+        $response->assertSee('Team Performance');
         $response->assertSee('Team Leaderboard');
     }
 }
